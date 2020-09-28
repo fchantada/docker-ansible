@@ -1,0 +1,27 @@
+ansible26:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$CI_AUTH\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context 26 --dockerfile 26/Dockerfile --destination fchantada/ansible:2.6
+  only:
+    refs:
+      - master
+      - schedules
+
+ansible29:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$CI_AUTH\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context 29 --dockerfile 29/Dockerfile --destination fchantada/ansible:2.9
+  only:
+    refs:
+      - master
+      - schedules
