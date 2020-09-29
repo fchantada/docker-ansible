@@ -25,3 +25,17 @@ ansible29:
     refs:
       - master
       - schedules
+
+ansible210:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$CI_AUTH\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context 210 --dockerfile 210/Dockerfile --destination fchantada/ansible:2.10 --destination fchantada/ansible:latest
+  only:
+    refs:
+      - master
+      - schedules
