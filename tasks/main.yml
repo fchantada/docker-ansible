@@ -1,0 +1,56 @@
+---
+- name: Create MariaDB directory
+  file:
+    path: /home/{{ default_user }}/{{ CONTAINER_NAME }}/
+    state: directory
+    mode: 0644
+  tags:
+  - asbrl-mariadb
+
+- name: Create MongoDB directory
+  file:
+    path: /home/{{ default_user }}/{{ CONTAINER_NAME }}/certificates
+    state: directory
+    mode: 0755
+  tags:
+  - asbrl-mariadb
+
+- name: MariaDB Data Volume
+  docker_volume:
+    name: "{{ CONTAINER_NAME }}_data"
+    state: "{{ VOLUME_STATE }}"
+  tags:
+  - asbrl-mariadb
+
+- name: MariaDB config file
+  template:
+    src: my.cnf.j2
+    dest: /home/{{ default_user }}/{{ CONTAINER_NAME }}/my.cnf
+    mode: 0644
+  tags:
+  - asbrl-mariadb
+
+- name: Deploy MariaDB
+  docker_container:
+    name: "{{ CONTAINER_NAME }}"
+    image: "{{ IMAGE }}:{{ BUILD }}"
+    pull: "true"
+    recreate: "yes"
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ ROOT_PASSWORD }}"
+      MYSQL_DATABASE: "{{ NEW_DATABASE }}"
+      MYSQL_USER: "{{ NEW_USER }}"
+      MYSQL_PASSWORD: "{{ NEW_PASSWORD }}"
+    cpu_period: "{{ DOCKER_CPU_PERIOD }}"
+    cpu_quota: "{{ DOCKER_CPU_QUOTA }}"
+    memory: "{{ DOCKER_MEMORY }}"
+    state: "{{ CONTAINER_STATE }}"
+    restart_policy: "unless-stopped"
+    published_ports:
+      - "0.0.0.0:{{ PORT }}:{{ PORT }}"
+    volumes:
+      - /home/{{ default_user }}/{{ CONTAINER_NAME }}/my.cnf:/etc/mysql/my.cnf
+      - '{{ CONTAINER_NAME }}_data:/var/lib/mysql'
+      - /home/{{ default_user }}/{{ CONTAINER_NAME }}/certificates/:/etc/mysql/certificates
+  tags:
+  - asbrl-mariadb

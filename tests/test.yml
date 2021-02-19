@@ -1,0 +1,25 @@
+---
+- name: Deploy
+  hosts: localhost
+  order: sorted
+  become: true
+  gather_facts: false
+
+  pre_tasks:
+
+  - name: copy role locally (DEBUG)
+    copy:
+      src: ../
+      dest: ./roles/asbrl-mariadb
+  
+  tasks:
+
+  - name: Deploy MariaDB
+    include_role:
+      name: asbrl-mariadb
+    vars:
+      ROOT_PASSWORD: "Pa$$w0rd"
+      DOCKER_CPU_QUOTA: 100000
+      DOCKER_MEMORY: 1G
+    tags:
+      - asbrl-mariadb
