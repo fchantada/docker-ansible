@@ -75,4 +75,4 @@ BSD
 Author Information
 ------------------
 
-Moegui.com
+Francisco Chantada
